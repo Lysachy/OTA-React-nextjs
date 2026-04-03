@@ -15,7 +15,7 @@ interface Props {
 
 function PinIcon() {
   return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted shrink-0">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-navy-soft shrink-0">
       <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
       <circle cx="12" cy="10" r="3" />
     </svg>
@@ -47,34 +47,36 @@ export default function DesktopDestinationCard({
 
   return (
     <div
-      className="group rounded-2xl border border-sand-border bg-white overflow-hidden hover:shadow-lg hover:border-ocean/15 transition-all duration-300 cursor-pointer"
+      className="card group cursor-pointer overflow-hidden hover:-translate-y-1"
       onClick={() => router.push(`/destinations/${id}`)}
     >
-      {/* Thumbnail — vertical on desktop */}
+      {/* Thumbnail */}
       <div
-        className="h-36 flex items-center justify-center relative overflow-hidden"
-        style={{ backgroundColor: thumbColor }}
+        className="relative flex h-44 items-center justify-center overflow-hidden"
+        style={{
+          background: `linear-gradient(160deg, ${thumbColor} 0%, #F4F0EB 100%)`,
+        }}
       >
-        <span className="text-5xl group-hover:scale-110 transition-transform duration-500">
+        <span className="text-5xl group-hover:scale-110 transition-transform duration-500 ease-out">
           {emoji}
         </span>
         {isLive && (
-          <span className="absolute top-3 left-3 bg-teal-500/90 text-white text-[9px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+          <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-medium text-teal-600 backdrop-blur-sm shadow-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
             LIVE
           </span>
         )}
       </div>
 
       {/* Content */}
-      <div className="p-4 flex flex-col gap-2">
-        <h3 className="text-sm font-semibold text-dark leading-tight group-hover:text-ocean transition-colors">
+      <div className="p-5 flex flex-col gap-2.5">
+        <h3 className="text-[15px] font-semibold text-navy leading-snug transition-colors group-hover:text-teal-600">
           {name}
         </h3>
 
         <div className="flex items-center gap-1.5">
           <PinIcon />
-          <span className="text-[11px] text-muted">{location}</span>
+          <span className="text-[12px] text-navy-soft">{location}</span>
         </div>
 
         {/* Tags */}
@@ -82,7 +84,7 @@ export default function DesktopDestinationCard({
           {tags.map((tag) => (
             <span
               key={tag}
-              className="bg-sand text-muted text-[10px] px-2 py-0.5 rounded-full"
+              className="rounded-full bg-shore-100 px-2.5 py-1 text-[10px] font-medium text-navy-soft"
             >
               {tag}
             </span>
@@ -90,14 +92,14 @@ export default function DesktopDestinationCard({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between mt-2 pt-3 border-t border-sand-border">
+        <div className="mt-1 flex items-center justify-between border-t border-shore-200 pt-4">
           <div>
-            <span className="text-base font-semibold text-dark">
+            <span className="text-base font-semibold text-navy">
               {formatRp(priceStart)}
             </span>
-            <span className="text-xs text-muted font-normal">/pax</span>
+            <span className="text-xs text-navy-soft font-normal">/pax</span>
           </div>
-          <button className="bg-ocean text-white rounded-xl px-4 py-2 text-xs font-medium hover:bg-ocean-mid transition-colors duration-200 flex items-center gap-1.5 group/btn">
+          <button className="btn-primary px-4 py-2 text-xs group/btn">
             Booking
             <span className="group-hover/btn:translate-x-0.5 transition-transform duration-200">
               <ArrowIcon />

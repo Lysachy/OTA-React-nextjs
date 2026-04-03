@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Fraunces } from "next/font/google";
+import { Figtree, Cormorant } from "next/font/google";
 import "./globals.css";
 
-const jakarta = Plus_Jakarta_Sans({
+const figtree = Figtree({
   subsets: ["latin"],
   variable: "--font-sans",
   weight: ["400", "500", "600"],
 });
 
-const fraunces = Fraunces({
+const cormorant = Cormorant({
   subsets: ["latin"],
   variable: "--font-serif",
-  weight: ["400", "600"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body
-        className={`${jakarta.variable} ${fraunces.variable} font-sans antialiased`}
+        className={`${figtree.variable} ${cormorant.variable} font-sans antialiased`}
       >
         {children}
       </body>

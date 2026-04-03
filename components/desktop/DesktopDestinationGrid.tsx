@@ -11,12 +11,12 @@ const filters = ['Semua', 'Bunaken', 'Likupang', 'Lembeh', 'Terdekat'];
 
 function SkeletonCard() {
   return (
-    <div className="rounded-2xl bg-sand animate-pulse">
-      <div className="h-36 rounded-t-2xl bg-sand-border" />
-      <div className="p-4 space-y-3">
-        <div className="h-4 bg-sand-border rounded w-3/4" />
-        <div className="h-3 bg-sand-border rounded w-1/2" />
-        <div className="h-3 bg-sand-border rounded w-2/3" />
+    <div className="card animate-pulse overflow-hidden">
+      <div className="h-44 bg-shore-100" />
+      <div className="p-5 space-y-3">
+        <div className="h-4 w-3/4 rounded-full bg-shore-100" />
+        <div className="h-3 w-1/2 rounded-full bg-shore-100" />
+        <div className="h-3 w-2/3 rounded-full bg-shore-100" />
       </div>
     </div>
   );
@@ -56,26 +56,28 @@ export default function DesktopDestinationGrid() {
   }, [activeFilter, fetchDestinations]);
 
   return (
-    <section className="bg-sand">
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-8">
-        {/* Header + Filters */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-dark">Destinasi Populer</h2>
-          <button className="text-xs text-ocean-mid font-medium hover:text-ocean transition-colors">
+    <section className="bg-shore-50">
+      <div className="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-10">
+        {/* Header */}
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <span className="section-label mb-2">Pilihan Terbaik</span>
+            <h2 className="text-xl font-semibold text-navy mt-1.5">Destinasi Populer</h2>
+          </div>
+          <button className="btn-ghost rounded-full px-4 py-2 text-xs">
             Lihat Semua
           </button>
         </div>
 
-        <div className="flex gap-2 mb-6">
+        {/* Filter chips */}
+        <div className="mb-8 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
           {filters.map((f) => (
             <button
               key={f}
               onClick={() => setActiveFilter(f)}
               className={clsx(
-                'px-4 py-2 rounded-xl text-xs font-medium border transition-all duration-200',
-                activeFilter === f
-                  ? 'bg-ocean text-white border-ocean shadow-sm'
-                  : 'bg-white text-muted border-sand-border hover:border-ocean/30 hover:text-dark'
+                'chip',
+                activeFilter === f && 'chip-active'
               )}
             >
               {f}
@@ -85,25 +87,30 @@ export default function DesktopDestinationGrid() {
 
         {/* Grid */}
         {loading ? (
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-5 min-[520px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
               <SkeletonCard key={i} />
             ))}
           </div>
         ) : destinations.length === 0 ? (
-          <div className="flex flex-col items-center py-20 gap-3">
-            <span className="text-5xl">🐠</span>
-            <p className="text-sm text-muted text-center">
+          <div className="flex flex-col items-center py-24 gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-shore-100 flex items-center justify-center">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-navy-soft">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+            </div>
+            <p className="text-sm text-navy-soft">
               Tidak ada destinasi ditemukan
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-5 min-[520px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {destinations.map((dest, i) => (
               <div
                 key={dest.id}
-                className="animate-fade-in-scale"
-                style={{ animationDelay: `${i * 70}ms` }}
+                className="animate-fade-in"
+                style={{ animationDelay: `${i * 60}ms` }}
               >
                 <DesktopDestinationCard {...dest} />
               </div>

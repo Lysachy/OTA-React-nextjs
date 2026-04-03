@@ -10,41 +10,62 @@ const sensors = [
     key: 'waveHeight',
     label: 'Gelombang',
     unit: 'm',
-    iconBg: '#E0F7FD',
-    icon: '🌊',
     getStatus: (v: number) => (v < 0.8 ? 'Aman' : 'Berbahaya'),
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" />
+        <path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" />
+        <path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" />
+      </svg>
+    ),
   },
   {
     key: 'waterTemp',
     label: 'Suhu Air',
     unit: '°C',
-    iconBg: '#FFF0E5',
-    icon: '🌡️',
     getStatus: (v: number) => (v >= 25 && v <= 30 ? 'Ideal' : 'Perhatian'),
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z" />
+      </svg>
+    ),
   },
   {
     key: 'visibility',
     label: 'Visibilitas',
     unit: 'm',
-    iconBg: '#E0FAF5',
-    icon: '👁️',
     getStatus: (v: number) => (v >= 15 ? 'Baik' : 'Perhatian'),
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+    ),
   },
   {
     key: 'ph',
     label: 'pH Air',
     unit: '',
-    iconBg: '#F0E8FF',
-    icon: '🧪',
     getStatus: (v: number) => (v >= 7.5 && v <= 8.5 ? 'Normal' : 'Perhatian'),
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2" />
+        <path d="M8.5 2h7" />
+      </svg>
+    ),
   },
   {
     key: 'windSpeed',
     label: 'Angin',
     unit: 'km/h',
-    iconBg: '#FFF8E0',
-    icon: '💨',
     getStatus: (v: number) => (v < 20 ? 'Normal' : 'Kencang'),
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2" />
+        <path d="M9.6 4.6A2 2 0 1 1 11 8H2" />
+        <path d="M12.6 19.4A2 2 0 1 0 14 16H2" />
+      </svg>
+    ),
   },
 ];
 
@@ -63,24 +84,24 @@ export default function DesktopSensorStrip() {
   }, []);
 
   return (
-    <section className="bg-sand">
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-6">
+    <section className="bg-shore-50">
+      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-10">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <h2 className="text-base font-semibold text-dark">Kondisi Laut</h2>
-            <span className="flex items-center gap-1.5 text-[10px] text-aqua-dim bg-aqua/10 px-2.5 py-1 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-aqua animate-pulse" />
+            <h2 className="text-base font-semibold text-navy">Kondisi Laut</h2>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 px-2.5 py-1 text-[10px] font-medium text-teal-600">
+              <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
               Real-time
             </span>
           </div>
-          <button className="text-xs text-ocean-mid font-medium hover:text-ocean transition-colors">
+          <button className="btn-ghost rounded-full px-4 py-2 text-xs">
             Lihat Detail
           </button>
         </div>
 
         {/* Sensor grid */}
-        <div className="grid grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
           {sensors.map((s, i) => {
             const value = data?.[s.key];
             const numVal = typeof value === 'number' ? value : null;
@@ -90,37 +111,37 @@ export default function DesktopSensorStrip() {
             return (
               <div
                 key={s.key}
-                className="rounded-2xl border border-sand-border bg-white p-4 flex flex-col gap-2 hover:shadow-md hover:border-ocean/10 transition-all duration-300 cursor-default animate-fade-in-scale"
+                className="card group cursor-default flex flex-col gap-3 p-5 animate-fade-in"
                 style={{ animationDelay: `${i * 80}ms` }}
               >
-                <div className="flex items-center justify-between">
-                  <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center text-base"
-                    style={{ backgroundColor: s.iconBg }}
-                  >
+                <div className="flex items-start justify-between">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-shore-100 text-navy-soft group-hover:bg-teal-50 group-hover:text-teal-600 transition-colors duration-300">
                     {s.icon}
                   </div>
                   <span
                     className={clsx(
-                      'text-[9px] font-medium px-2 py-0.5 rounded-full',
+                      'rounded-full px-2.5 py-1 text-[10px] font-medium',
                       statusType === 'ok'
-                        ? 'bg-teal-50 text-teal-700'
-                        : 'bg-amber-50 text-amber-800'
+                        ? 'bg-teal-50 text-teal-600'
+                        : 'bg-amber-50 text-amber-700'
                     )}
                   >
                     {status}
                   </span>
                 </div>
 
-                <span className="text-[11px] text-muted mt-1">{s.label}</span>
-
-                <div className="flex items-baseline gap-1">
-                  <span className="font-semibold text-xl text-dark">
-                    {numVal !== null ? numVal.toFixed(1) : '—'}
+                <div>
+                  <span className="text-[11px] uppercase tracking-[0.14em] text-navy-soft">
+                    {s.label}
                   </span>
-                  {s.unit && (
-                    <span className="text-xs text-muted">{s.unit}</span>
-                  )}
+                  <div className="flex items-baseline gap-1 mt-1">
+                    <span className="text-2xl font-semibold text-navy tracking-tight">
+                      {numVal !== null ? numVal.toFixed(1) : '—'}
+                    </span>
+                    {s.unit && (
+                      <span className="text-xs text-navy-soft">{s.unit}</span>
+                    )}
+                  </div>
                 </div>
               </div>
             );

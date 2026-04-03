@@ -24,10 +24,8 @@ export default function FilterChips({ onFilterChange }: Props) {
           key={f}
           onClick={() => handleClick(f)}
           className={clsx(
-            'px-3.5 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap border shrink-0 transition-all duration-200',
-            active === f
-              ? 'bg-ocean text-white border-ocean shadow-sm'
-              : 'bg-white text-muted border-sand-border hover:border-ocean/30'
+            'chip shrink-0 whitespace-nowrap',
+            active === f && 'chip-active'
           )}
         >
           {f}

@@ -12,20 +12,20 @@ const navLinks = [
   { label: 'Monitoring', href: '/monitoring' },
 ];
 
-function BellIcon() {
+function SearchIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.35-4.35" />
     </svg>
   );
 }
 
-function SearchIcon() {
+function BellIcon() {
   return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.35-4.35" />
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
     </svg>
   );
 }
@@ -38,21 +38,21 @@ export default function TopNav() {
     : 'DN';
 
   return (
-    <header className="bg-ocean sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 lg:px-10">
-        <div className="flex items-center justify-between h-16">
+    <header className="sticky top-0 z-50 border-b border-shore-200/60 bg-shore-50/80 backdrop-blur-xl">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+        <div className="flex h-16 items-center justify-between gap-4">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-aqua/20 flex items-center justify-center">
-              <span className="text-aqua font-serif font-semibold text-sm">DN</span>
+          <Link href="/" className="flex items-center gap-2.5 shrink-0">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-500 shadow-sm">
+              <span className="font-serif text-sm font-semibold text-white tracking-tight">D</span>
             </div>
-            <span className="font-serif text-lg text-white font-semibold tracking-tight">
+            <span className="font-serif text-lg font-semibold tracking-tight text-navy">
               DeepNorth
             </span>
           </Link>
 
-          {/* Nav links */}
-          <nav className="hidden md:flex items-center gap-1">
+          {/* Nav links - center */}
+          <nav className="hidden sm:flex items-center gap-1 rounded-full border border-shore-200/70 bg-white/60 p-1 backdrop-blur-sm">
             {navLinks.map(({ label, href }) => {
               const isActive = pathname === href;
               return (
@@ -60,10 +60,10 @@ export default function TopNav() {
                   key={href}
                   href={href}
                   className={clsx(
-                    'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+                    'rounded-full px-4 py-1.5 text-[13px] font-medium transition-all duration-200',
                     isActive
-                      ? 'bg-white/15 text-white'
-                      : 'text-white/60 hover:text-white hover:bg-white/5'
+                      ? 'bg-teal-500 text-white shadow-sm'
+                      : 'text-navy-soft hover:text-navy hover:bg-white/80'
                   )}
                 >
                   {label}
@@ -73,26 +73,29 @@ export default function TopNav() {
           </nav>
 
           {/* Right side */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 shrink-0">
             {/* Search */}
-            <div className="hidden lg:flex items-center bg-white/10 border border-white/10 rounded-xl px-3 py-2 gap-2 w-64 hover:bg-white/15 transition-colors duration-200">
+            <div className="hidden min-[900px]:flex items-center gap-2 rounded-full border border-shore-200 bg-white/70 px-3.5 py-2 text-navy-soft transition-colors duration-200 hover:border-shore-300 w-56 lg:w-64">
               <SearchIcon />
               <input
-                placeholder="Cari destinasi selam..."
-                className="bg-transparent text-white placeholder:text-white/40 text-xs flex-1 outline-none"
+                placeholder="Cari destinasi..."
+                className="flex-1 bg-transparent text-[13px] text-navy placeholder:text-[#A3AEB5] outline-none"
               />
             </div>
 
             {/* Notification */}
-            <button className="relative text-white/70 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/10" aria-label="Notifikasi">
+            <button
+              className="relative rounded-full border border-shore-200 bg-white/70 p-2 text-navy-soft transition-all duration-200 hover:border-shore-300 hover:text-navy"
+              aria-label="Notifikasi"
+            >
               <BellIcon />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-aqua border border-ocean" />
+              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full border-2 border-white bg-teal-400" />
             </button>
 
             {/* Avatar */}
             <Link
               href="/profile"
-              className="w-9 h-9 rounded-full bg-ocean-mid flex items-center justify-center text-[11px] font-semibold text-white border-2 border-white/20 hover:border-aqua/40 transition-colors duration-200"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-b from-teal-100 to-teal-200 text-[11px] font-semibold text-teal-700 transition-all duration-200 hover:shadow-glow"
             >
               {initials}
             </Link>

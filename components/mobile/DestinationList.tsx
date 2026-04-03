@@ -8,7 +8,7 @@ import DestinationCard from './DestinationCard';
 import FilterChips from './FilterChips';
 
 function SkeletonCard() {
-  return <div className="h-24 rounded-2xl bg-sand animate-pulse" />;
+  return <div className="h-24 rounded-2xl bg-shore-100 animate-pulse" />;
 }
 
 export default function DestinationList() {
@@ -44,23 +44,19 @@ export default function DestinationList() {
     fetchDestinations(activeFilter);
   }, [activeFilter, fetchDestinations]);
 
-  const handleFilterChange = (filter: string) => {
-    setActiveFilter(filter);
-  };
-
   return (
-    <div className="bg-sand">
+    <div className="bg-shore-50">
       {/* Section header */}
-      <div className="flex items-center justify-between px-4 pt-1 pb-2">
-        <h2 className="text-sm font-semibold text-dark">Destinasi Populer</h2>
-        <button className="text-[11px] text-ocean-mid font-medium">
+      <div className="flex items-center justify-between px-4 pt-1 pb-2.5">
+        <h2 className="text-sm font-semibold text-navy">Destinasi Populer</h2>
+        <button className="text-[11px] text-teal-600 font-medium">
           Lihat Semua
         </button>
       </div>
 
-      <FilterChips onFilterChange={handleFilterChange} />
+      <FilterChips onFilterChange={(f) => setActiveFilter(f)} />
 
-      <div className="flex flex-col gap-2.5 px-4 pt-3 pb-4">
+      <div className="flex flex-col gap-3 px-4 pt-3.5 pb-4">
         {loading ? (
           <>
             <SkeletonCard />
@@ -68,9 +64,14 @@ export default function DestinationList() {
             <SkeletonCard />
           </>
         ) : destinations.length === 0 ? (
-          <div className="flex flex-col items-center py-10 gap-2">
-            <span className="text-4xl">🐠</span>
-            <p className="text-xs text-muted text-center">
+          <div className="flex flex-col items-center py-12 gap-3">
+            <div className="w-12 h-12 rounded-xl bg-shore-100 flex items-center justify-center">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="text-navy-soft">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+            </div>
+            <p className="text-xs text-navy-soft">
               Tidak ada destinasi ditemukan
             </p>
           </div>
