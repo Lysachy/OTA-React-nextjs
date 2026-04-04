@@ -100,7 +100,7 @@ export default function BottomNav() {
                   isActive ? 'text-teal-600' : 'text-navy-soft'
                 )}
               >
-                {label}
+                {href === '/profile' && !user ? 'Masuk' : label}
               </span>
             </Link>
           );
