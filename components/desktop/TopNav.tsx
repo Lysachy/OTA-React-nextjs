@@ -83,22 +83,41 @@ export default function TopNav() {
               />
             </div>
 
-            {/* Notification */}
-            <button
-              className="relative rounded-full border border-shore-200 bg-white/70 p-2 text-navy-soft transition-all duration-200 hover:border-shore-300 hover:text-navy"
-              aria-label="Notifikasi"
-            >
-              <BellIcon />
-              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full border-2 border-white bg-teal-400" />
-            </button>
+            {user ? (
+              <>
+                {/* Notification */}
+                <button
+                  className="relative rounded-full border border-shore-200 bg-white/70 p-2 text-navy-soft transition-all duration-200 hover:border-shore-300 hover:text-navy"
+                  aria-label="Notifikasi"
+                >
+                  <BellIcon />
+                  <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full border-2 border-white bg-teal-400" />
+                </button>
 
-            {/* Avatar */}
-            <Link
-              href="/profile"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-b from-teal-100 to-teal-200 text-[11px] font-semibold text-teal-700 transition-all duration-200 hover:shadow-glow"
-            >
-              {initials}
-            </Link>
+                {/* Avatar */}
+                <Link
+                  href="/profile"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-b from-teal-100 to-teal-200 text-[11px] font-semibold text-teal-700 transition-all duration-200 hover:shadow-glow"
+                >
+                  {initials}
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/profile"
+                  className="btn-ghost rounded-full px-4 py-1.5 text-[13px]"
+                >
+                  Masuk
+                </Link>
+                <Link
+                  href="/profile?mode=register"
+                  className="btn-primary rounded-full px-4 py-1.5 text-[13px]"
+                >
+                  Daftar
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -1,25 +1,12 @@
 import TopNav from '@/components/desktop/TopNav';
 import BottomNav from '@/components/mobile/BottomNav';
-import PageParallaxHero from '@/components/desktop/PageParallaxHero';
+import ProfileContent from '@/components/profile/ProfileContent';
 
 export default function Profile() {
   return (
     <main className="min-h-dvh bg-shore-50 pb-24 md:pb-0">
       <TopNav />
-      <PageParallaxHero
-        badge="Your Account"
-        title="Profil"
-        description="Kelola akun, preferensi, dan riwayat perjalanan Anda."
-        imageUrl="https://commons.wikimedia.org/wiki/Special:FilePath/Liang%20Beach%20Bunaken.JPG"
-      />
-      <section className="mx-auto flex w-full max-w-7xl flex-col items-center gap-4 px-4 py-16 text-center sm:px-6 lg:px-10 lg:py-20">
-        <div className="card w-full max-w-2xl px-8 py-12">
-          <span className="section-label">Segera Hadir</span>
-          <p className="mx-auto mt-4 max-w-lg text-sm text-navy-soft">
-            Halaman profil lengkap akan segera hadir.
-          </p>
-        </div>
-      </section>
+      <ProfileContent />
       <BottomNav />
     </main>
   );
