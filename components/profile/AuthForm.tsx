@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -79,6 +79,11 @@ function LoadingSpinner() {
 
 export default function AuthForm({ initialMode = 'login' }: { initialMode?: 'login' | 'register' }) {
   const [mode, setMode] = useState<'login' | 'register'>(initialMode);
+
+  useEffect(() => {
+    setMode(initialMode);
+  }, [initialMode]);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');

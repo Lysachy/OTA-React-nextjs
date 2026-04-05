@@ -103,20 +103,12 @@ export default function TopNav() {
                 </Link>
               </>
             ) : (
-              <>
-                <Link
-                  href="/profile"
-                  className="btn-ghost rounded-full px-4 py-1.5 text-[13px]"
-                >
-                  Masuk
-                </Link>
-                <Link
-                  href="/profile?mode=register"
-                  className="btn-primary rounded-full px-4 py-1.5 text-[13px]"
-                >
-                  Daftar
-                </Link>
-              </>
+              <Link
+                href="/profile"
+                className="btn-primary rounded-full px-4 py-1.5 text-[13px]"
+              >
+                Masuk
+              </Link>
             )}
           </div>
         </div>
