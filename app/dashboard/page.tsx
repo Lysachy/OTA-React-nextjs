@@ -9,20 +9,21 @@ import DestinasiPanel from '@/components/dashboard/DestinasiPanel';
 import PenggunaPanel from '@/components/dashboard/PenggunaPanel';
 
 export default function Dashboard() {
-  const { user, role } = useUserRole();
+  const { user, role, loading } = useUserRole();
   const router = useRouter();
   const [page, setPage] = useState<DashboardPage>('statistik');
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    if (user === null) {
+    if (loading) return;
+    if (!user) {
       router.replace('/profile');
     } else if (role && role !== 'admin') {
       router.replace('/beranda');
     }
-  }, [user, role, router]);
+  }, [user, role, loading, router]);
 
-  if (!user || !role || role !== 'admin') {
+  if (loading || !user || !role || role !== 'admin') {
     return null;
   }
 

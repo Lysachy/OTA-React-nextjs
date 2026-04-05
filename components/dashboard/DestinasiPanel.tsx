@@ -135,8 +135,8 @@ export default function DestinasiPanel() {
 
       {/* Form modal */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy/30 backdrop-blur-sm" onClick={closeForm}>
-          <div className="w-full max-w-lg card p-6 max-h-[90dvh] overflow-y-auto animate-fade-in" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-navy/30 backdrop-blur-sm animate-fade-in" onClick={closeForm}>
+          <div className="w-full max-w-lg card p-6 max-h-[85dvh] overflow-y-auto animate-fade-up m-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-5">
               <h2 className="font-serif text-lg font-medium text-navy">
                 {editingId ? 'Edit Destinasi' : 'Tambah Destinasi'}
@@ -266,7 +266,7 @@ export default function DestinasiPanel() {
       <div className="mt-6 space-y-3">
         {destinations.length === 0 && (
           <div className="card p-8 text-center">
-            <p className="text-sm text-navy-soft">Belum ada destinasi. Klik "Tambah" untuk menambahkan.</p>
+            <p className="text-sm text-navy-soft">Belum ada destinasi. Klik &ldquo;Tambah&rdquo; untuk menambahkan.</p>
           </div>
         )}
         {destinations.map((d) => (

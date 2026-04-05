@@ -10,7 +10,7 @@ interface Props {
   thumbColor: string;
   tags: string[];
   priceStart: number;
-  isLive: boolean;
+  isLive?: boolean;
 }
 
 function PinIcon() {

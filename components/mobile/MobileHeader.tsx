@@ -21,7 +21,7 @@ function BellIcon() {
 }
 
 export default function MobileHeader() {
-  const user = useAuthState();
+  const { user } = useAuthState();
   const firstName = user?.displayName?.split(' ')[0] ?? 'Explorer';
   const initials = user?.displayName
     ? user.displayName.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()

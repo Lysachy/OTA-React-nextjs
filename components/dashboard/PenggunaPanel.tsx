@@ -3,12 +3,6 @@
 import { useEffect, useState } from 'react';
 import { subscribeUsers, updateUserRole, type AppUser } from '@/lib/firestore';
 
-const roleLabels: Record<AppUser['role'], string> = {
-  user: 'User',
-  pengelola: 'Pengelola',
-  admin: 'Admin',
-};
-
 const roleColors: Record<AppUser['role'], string> = {
   user: 'bg-shore-100 text-navy-soft',
   pengelola: 'bg-amber-100 text-amber-700',

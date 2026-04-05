@@ -32,7 +32,7 @@ function BellIcon() {
 
 export default function TopNav() {
   const pathname = usePathname();
-  const user = useAuthState();
+  const { user } = useAuthState();
   const initials = user?.displayName
     ? user.displayName.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()
     : 'DN';

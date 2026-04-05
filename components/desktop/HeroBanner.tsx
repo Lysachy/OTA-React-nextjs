@@ -13,7 +13,7 @@ function SearchIcon() {
 }
 
 export default function HeroBanner() {
-  const user = useAuthState();
+  const { user } = useAuthState();
   const firstName = user?.displayName?.split(' ')[0] ?? 'Explorer';
   const [scrollY, setScrollY] = useState(0);
   const heroImageUrl =

@@ -9,14 +9,21 @@ export type UserRole = 'user' | 'pengelola' | 'admin';
 
 export function useAuthState() {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!auth) return;
-    const unsub = onAuthStateChanged(auth, setUser);
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
+    const unsub = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setLoading(false);
+    });
     return () => unsub();
   }, []);
 
-  return user;
+  return { user, loading };
 }
 
 async function ensureUserDoc(user: User) {
@@ -35,12 +42,16 @@ async function ensureUserDoc(user: User) {
 }
 
 export function useUserRole() {
-  const user = useAuthState();
+  const { user, loading: authLoading } = useAuthState();
   const [role, setRole] = useState<UserRole | null>(null);
+  const [roleLoading, setRoleLoading] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return;
+
     if (!user || !db) {
       setRole(null);
+      setRoleLoading(false);
       return;
     }
 
@@ -49,10 +60,11 @@ export function useUserRole() {
     const unsub = onSnapshot(doc(db, 'users', user.uid), (snap) => {
       const data = snap.data();
       setRole((data?.role as UserRole) ?? 'user');
+      setRoleLoading(false);
     });
 
     return () => unsub();
-  }, [user]);
+  }, [user, authLoading]);
 
-  return { user, role };
+  return { user, role, loading: authLoading || roleLoading };
 }
