@@ -94,6 +94,33 @@ export async function updateUserRole(uid: string, role: AppUser["role"]) {
   await updateDoc(doc(db, "users", uid), { role });
 }
 
+// ── Bookings ──
+
+export interface Booking {
+  id: string;
+  userId: string;
+  destinationId: string;
+  destinationName: string;
+  date: string;
+  guests: number;
+  name: string;
+  phone: string;
+  notes: string;
+  status: "pending" | "confirmed" | "cancelled";
+  createdAt: unknown;
+}
+
+export type BookingInput = Omit<Booking, "id" | "status" | "createdAt">;
+
+export async function createBooking(data: BookingInput) {
+  if (!db) return;
+  await addDoc(collection(db, "bookings"), {
+    ...data,
+    status: "pending",
+    createdAt: serverTimestamp(),
+  });
+}
+
 // ── Monitoring ──
 
 export function subscribeSensor(

@@ -14,15 +14,6 @@ function HomeIcon({ active }: { active: boolean }) {
   );
 }
 
-function MapIcon({ active }: { active: boolean }) {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={active ? 'text-teal-600' : 'text-navy-soft'}>
-      <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
-      <line x1="9" x2="9" y1="3" y2="18" />
-      <line x1="15" x2="15" y1="6" y2="21" />
-    </svg>
-  );
-}
 
 function CalendarIcon() {
   return (
@@ -43,21 +34,11 @@ function ActivityIcon({ active }: { active: boolean }) {
   );
 }
 
-function UserIcon({ active }: { active: boolean }) {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={active ? 'text-teal-600' : 'text-navy-soft'}>
-      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  );
-}
 
 const navItems = [
   { label: 'Beranda', href: '/beranda', Icon: HomeIcon },
-  { label: 'Destinasi', href: '/destinations', Icon: MapIcon },
   { label: 'Booking', href: '/booking', Icon: CalendarIcon, center: true },
   { label: 'Monitor', href: '/monitoring', Icon: ActivityIcon },
-  { label: 'Profil', href: '/profile', Icon: UserIcon },
 ];
 
 export default function BottomNav() {

@@ -11,6 +11,8 @@ interface Props {
   tags: string[];
   priceStart: number;
   isLive?: boolean;
+  description?: string;
+  image?: string;
 }
 
 function PinIcon() {
@@ -42,6 +44,7 @@ export default function DesktopDestinationCard({
   tags,
   priceStart,
   isLive,
+  image,
 }: Props) {
   const router = useRouter();
 
@@ -54,12 +57,20 @@ export default function DesktopDestinationCard({
       <div
         className="relative flex h-44 items-center justify-center overflow-hidden"
         style={{
-          background: `linear-gradient(160deg, ${thumbColor} 0%, #F4F0EB 100%)`,
+          background: image ? undefined : `linear-gradient(160deg, ${thumbColor} 0%, #F4F0EB 100%)`,
         }}
       >
-        <span className="text-5xl group-hover:scale-110 transition-transform duration-500 ease-out">
-          {emoji}
-        </span>
+        {image ? (
+          <img
+            src={image}
+            alt={name}
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          />
+        ) : (
+          <span className="text-5xl group-hover:scale-110 transition-transform duration-500 ease-out">
+            {emoji}
+          </span>
+        )}
         {isLive && (
           <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-medium text-teal-600 backdrop-blur-sm shadow-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />

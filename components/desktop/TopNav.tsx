@@ -7,7 +7,6 @@ import { useAuthState } from '@/lib/useAuth';
 
 const navLinks = [
   { label: 'Beranda', href: '/beranda' },
-  { label: 'Destinasi', href: '/destinations' },
   { label: 'Booking', href: '/booking' },
   { label: 'Monitoring', href: '/monitoring' },
 ];
