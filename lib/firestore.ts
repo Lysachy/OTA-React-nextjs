@@ -4,10 +4,16 @@ import {
   query,
   where,
   doc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
   onSnapshot,
+  serverTimestamp,
   type DocumentData,
 } from "firebase/firestore";
 import { db } from "./firebase";
+
+// ── Destinations ──
 
 export interface Destination {
   id: string;
@@ -17,8 +23,11 @@ export interface Destination {
   thumbColor: string;
   tags: string[];
   priceStart: number;
-  isLive: boolean;
+  description: string;
+  image: string;
 }
+
+export type DestinationInput = Omit<Destination, "id">;
 
 export async function getDestinations(filter?: string): Promise<Destination[]> {
   if (!db) return [];
@@ -31,6 +40,61 @@ export async function getDestinations(filter?: string): Promise<Destination[]> {
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() } as Destination));
 }
+
+export function subscribeDestinations(
+  callback: (destinations: Destination[]) => void
+) {
+  if (!db) return () => {};
+  const ref = collection(db, "destinations");
+  return onSnapshot(ref, (snap) => {
+    callback(snap.docs.map((d) => ({ id: d.id, ...d.data() } as Destination)));
+  });
+}
+
+export async function addDestination(data: DestinationInput) {
+  if (!db) return;
+  await addDoc(collection(db, "destinations"), {
+    ...data,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function updateDestination(id: string, data: Partial<DestinationInput>) {
+  if (!db) return;
+  await updateDoc(doc(db, "destinations", id), data);
+}
+
+export async function deleteDestination(id: string) {
+  if (!db) return;
+  await deleteDoc(doc(db, "destinations", id));
+}
+
+// ── Users ──
+
+export interface AppUser {
+  uid: string;
+  name: string;
+  email: string;
+  photoURL: string;
+  role: "user" | "pengelola" | "admin";
+}
+
+export function subscribeUsers(callback: (users: AppUser[]) => void) {
+  if (!db) return () => {};
+  const ref = collection(db, "users");
+  return onSnapshot(ref, (snap) => {
+    callback(
+      snap.docs.map((d) => ({ uid: d.id, ...d.data() } as AppUser))
+    );
+  });
+}
+
+export async function updateUserRole(uid: string, role: AppUser["role"]) {
+  if (!db) return;
+  await updateDoc(doc(db, "users", uid), { role });
+}
+
+// ── Monitoring ──
 
 export function subscribeSensor(
   docId: string,

@@ -8,7 +8,8 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 
 function EyeIcon() {
   return (
@@ -91,6 +92,21 @@ export default function AuthForm({ initialMode = 'login' }: { initialMode?: 'log
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const ensureUserDoc = async (user: { uid: string; displayName: string | null; email: string | null; photoURL: string | null }) => {
+    if (!db) return;
+    const ref = doc(db, 'users', user.uid);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) {
+      await setDoc(ref, {
+        name: user.displayName ?? '',
+        email: user.email ?? '',
+        photoURL: user.photoURL ?? '',
+        role: 'user',
+        createdAt: serverTimestamp(),
+      });
+    }
+  };
+
   const getErrorMessage = (code: string) => {
     switch (code) {
       case 'auth/invalid-email': return 'Format email tidak valid.';
@@ -117,6 +133,7 @@ export default function AuthForm({ initialMode = 'login' }: { initialMode?: 'log
         if (name.trim()) {
           await updateProfile(cred.user, { displayName: name.trim() });
         }
+        await ensureUserDoc(cred.user);
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
@@ -133,7 +150,8 @@ export default function AuthForm({ initialMode = 'login' }: { initialMode?: 'log
     setError('');
     setLoading(true);
     try {
-      await signInWithPopup(auth, new GoogleAuthProvider());
+      const cred = await signInWithPopup(auth, new GoogleAuthProvider());
+      await ensureUserDoc(cred.user);
     } catch (err: unknown) {
       const firebaseErr = err as { code?: string };
       setError(getErrorMessage(firebaseErr.code ?? ''));

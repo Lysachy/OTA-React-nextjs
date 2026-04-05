@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from './firebase';
 
 export type UserRole = 'user' | 'pengelola' | 'admin';
@@ -19,6 +19,21 @@ export function useAuthState() {
   return user;
 }
 
+async function ensureUserDoc(user: User) {
+  if (!db) return;
+  const ref = doc(db, 'users', user.uid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    await setDoc(ref, {
+      name: user.displayName ?? '',
+      email: user.email ?? '',
+      photoURL: user.photoURL ?? '',
+      role: 'user',
+      createdAt: serverTimestamp(),
+    });
+  }
+}
+
 export function useUserRole() {
   const user = useAuthState();
   const [role, setRole] = useState<UserRole | null>(null);
@@ -28,6 +43,8 @@ export function useUserRole() {
       setRole(null);
       return;
     }
+
+    ensureUserDoc(user);
 
     const unsub = onSnapshot(doc(db, 'users', user.uid), (snap) => {
       const data = snap.data();

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { signOut, updateProfile } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import type { User } from 'firebase/auth';
+import type { UserRole } from '@/lib/useAuth';
+import Link from 'next/link';
 
 function CameraIcon() {
   return (
@@ -94,7 +96,7 @@ const menuItems = [
   },
 ];
 
-export default function ProfileView({ user }: { user: User }) {
+export default function ProfileView({ user, role }: { user: User; role: UserRole | null }) {
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user.displayName ?? '');
   const [saving, setSaving] = useState(false);
@@ -226,6 +228,30 @@ export default function ProfileView({ user }: { user: User }) {
           </button>
         ))}
       </div>
+
+      {/* Dashboard — admin/pengelola only */}
+      {(role === 'admin' || role === 'pengelola') && (
+        <Link
+          href="/dashboard"
+          className="card mt-4 flex items-center gap-4 px-5 py-4 transition-colors hover:bg-shore-50 overflow-hidden"
+        >
+          <div className="h-10 w-10 rounded-xl bg-teal-100 flex items-center justify-center text-teal-600 shrink-0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <rect width="7" height="9" x="3" y="3" rx="1" />
+              <rect width="7" height="5" x="14" y="3" rx="1" />
+              <rect width="7" height="9" x="14" y="12" rx="1" />
+              <rect width="7" height="5" x="3" y="16" rx="1" />
+            </svg>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[13px] font-medium text-navy">Dashboard</p>
+            <p className="text-[11px] text-navy-soft mt-0.5">Kelola destinasi dan pengguna</p>
+          </div>
+          <span className="text-shore-300">
+            <ChevronIcon />
+          </span>
+        </Link>
+      )}
 
       {/* Logout */}
       <button
