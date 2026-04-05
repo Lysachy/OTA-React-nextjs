@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import clsx from 'clsx';
-import { useAuthState } from '@/lib/useAuth';
+
 
 function HomeIcon({ active }: { active: boolean }) {
   return (
@@ -43,7 +43,6 @@ const navItems = [
 
 export default function BottomNav() {
   const pathname = usePathname();
-  const { user } = useAuthState();
 
   return (
     <nav className="fixed inset-x-3 bottom-3 z-50 mx-auto rounded-2xl border border-shore-200/80 bg-white/85 px-2 pt-2 pb-[calc(env(safe-area-inset-bottom,6px)+6px)] backdrop-blur-xl shadow-soft md:hidden">
@@ -81,7 +80,7 @@ export default function BottomNav() {
                   isActive ? 'text-teal-600' : 'text-navy-soft'
                 )}
               >
-                {href === '/profile' && !user ? 'Masuk' : label}
+                {label}
               </span>
             </Link>
           );
