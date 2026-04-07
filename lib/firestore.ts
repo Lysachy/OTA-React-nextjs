@@ -121,6 +121,11 @@ export async function createBooking(data: BookingInput) {
   });
 }
 
+export async function updateBookingStatus(id: string, status: Booking["status"]) {
+  if (!db) return;
+  await updateDoc(doc(db, "bookings", id), { status });
+}
+
 // ── Monitoring ──
 
 export function subscribeSensor(
