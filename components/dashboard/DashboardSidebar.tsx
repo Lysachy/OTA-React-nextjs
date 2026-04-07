@@ -62,10 +62,10 @@ function CloseIcon() {
   );
 }
 
-const menuItems: { key: DashboardPage; label: string; icon: React.ReactNode }[] = [
-  { key: 'statistik', label: 'Statistik', icon: <ChartIcon /> },
-  { key: 'destinasi', label: 'Destinasi', icon: <MapIcon /> },
-  { key: 'pengguna', label: 'Pengguna', icon: <UsersIcon /> },
+const allMenuItems: { key: DashboardPage; label: string; icon: React.ReactNode; roles: string[] }[] = [
+  { key: 'statistik', label: 'Statistik', icon: <ChartIcon />, roles: ['admin', 'pengelola'] },
+  { key: 'destinasi', label: 'Destinasi', icon: <MapIcon />, roles: ['admin'] },
+  { key: 'pengguna', label: 'Pengguna', icon: <UsersIcon />, roles: ['admin'] },
 ];
 
 interface Props {
@@ -73,9 +73,11 @@ interface Props {
   onNavigate: (page: DashboardPage) => void;
   mobileOpen: boolean;
   onMobileToggle: () => void;
+  role?: string;
 }
 
-export default function DashboardSidebar({ active, onNavigate, mobileOpen, onMobileToggle }: Props) {
+export default function DashboardSidebar({ active, onNavigate, mobileOpen, onMobileToggle, role = 'admin' }: Props) {
+  const menuItems = allMenuItems.filter((item) => item.roles.includes(role));
   return (
     <>
       {/* Mobile top bar */}
@@ -113,7 +115,7 @@ export default function DashboardSidebar({ active, onNavigate, mobileOpen, onMob
             </div>
             <div>
               <span className="font-serif text-base font-semibold tracking-tight text-navy">DeepNorth</span>
-              <p className="text-[10px] text-navy-soft -mt-0.5">Admin Panel</p>
+              <p className="text-[10px] text-navy-soft -mt-0.5">{role === 'admin' ? 'Admin Panel' : 'Panel Pengelola'}</p>
             </div>
           </Link>
           <button onClick={onMobileToggle} className="md:hidden text-navy-soft hover:text-navy transition-colors">

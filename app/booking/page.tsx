@@ -2,12 +2,13 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuthState } from '@/lib/useAuth';
-import { createBooking, type Destination } from '@/lib/firestore';
+import { createBooking, type Destination, type Booking as BookingType } from '@/lib/firestore';
 import TopNav from '@/components/desktop/TopNav';
 import BottomNav from '@/components/mobile/BottomNav';
+import clsx from 'clsx';
 
 function CheckCircleIcon() {
   return (
@@ -18,17 +19,31 @@ function CheckCircleIcon() {
   );
 }
 
-function BookingForm() {
+function CalendarIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+      <line x1="16" x2="16" y1="2" y2="6" />
+      <line x1="8" x2="8" y1="2" y2="6" />
+      <line x1="3" x2="21" y1="10" y2="10" />
+    </svg>
+  );
+}
+
+function BookingContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuthState();
   const destId = searchParams.get('dest');
 
+  const [tab, setTab] = useState<'booking' | 'riwayat'>(destId ? 'booking' : 'riwayat');
   const [destination, setDestination] = useState<Destination | null>(null);
   const [loadingDest, setLoadingDest] = useState(!!destId);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [bookings, setBookings] = useState<BookingType[]>([]);
+  const [loadingBookings, setLoadingBookings] = useState(true);
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -59,6 +74,25 @@ function BookingForm() {
     if (user?.displayName && !form.name) {
       setForm((f) => ({ ...f, name: user.displayName ?? '' }));
     }
+  }, [user]);
+
+  // Load user bookings
+  useEffect(() => {
+    if (!user || !db) {
+      setLoadingBookings(false);
+      return;
+    }
+    const q = query(
+      collection(db, 'bookings'),
+      where('userId', '==', user.uid)
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      const data = snap.docs.map((d) => ({ id: d.id, ...d.data() } as BookingType));
+      data.sort((a, b) => (b.date > a.date ? 1 : -1));
+      setBookings(data);
+      setLoadingBookings(false);
+    });
+    return () => unsub();
   }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -103,10 +137,22 @@ function BookingForm() {
             tanggal <span className="font-medium text-navy">{new Date(form.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span> sedang diproses.
           </p>
           <div className="flex gap-3 mt-4">
-            <button onClick={() => router.push('/beranda')} className="btn-ghost rounded-xl px-5 py-2.5 text-[13px]">
-              Ke Beranda
+            <button
+              onClick={() => {
+                setSuccess(false);
+                setTab('riwayat');
+              }}
+              className="btn-ghost rounded-xl px-5 py-2.5 text-[13px]"
+            >
+              Lihat Riwayat
             </button>
-            <button onClick={() => { setSuccess(false); setForm({ date: '', guests: 1, name: user?.displayName ?? '', phone: '', notes: '' }); }} className="btn-primary rounded-xl px-5 py-2.5 text-[13px]">
+            <button
+              onClick={() => {
+                setSuccess(false);
+                setForm({ date: '', guests: 1, name: user?.displayName ?? '', phone: '', notes: '' });
+              }}
+              className="btn-primary rounded-xl px-5 py-2.5 text-[13px]"
+            >
               Booking Lagi
             </button>
           </div>
@@ -117,132 +163,219 @@ function BookingForm() {
 
   return (
     <div className="w-full max-w-lg mx-auto animate-fade-in">
-      <h1 className="font-serif text-2xl font-medium text-navy sm:text-3xl">Booking</h1>
-      <p className="mt-2 text-sm text-navy-soft">Isi detail untuk memesan perjalanan</p>
+      {/* Tabs */}
+      <div className="flex gap-2 mb-6">
+        <button
+          onClick={() => setTab('booking')}
+          className={clsx(
+            'chip',
+            tab === 'booking' && 'chip-active'
+          )}
+        >
+          Booking Baru
+        </button>
+        <button
+          onClick={() => setTab('riwayat')}
+          className={clsx(
+            'chip',
+            tab === 'riwayat' && 'chip-active'
+          )}
+        >
+          Riwayat {bookings.length > 0 && `(${bookings.length})`}
+        </button>
+      </div>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-5">
-        {/* Destination info */}
-        <div>
-          <label className="block text-[11px] font-medium text-navy-soft uppercase tracking-wider mb-1.5">Destinasi</label>
-          {loadingDest ? (
-            <div className="rounded-xl border border-shore-200 bg-white px-3.5 py-3 animate-pulse">
-              <div className="h-4 w-2/3 rounded-full bg-shore-100" />
-            </div>
-          ) : destination ? (
-            <div className="rounded-xl border border-teal-200 bg-teal-50/50 px-4 py-3 flex items-center gap-3">
-              {destination.image ? (
-                <img src={destination.image} alt={destination.name} className="h-10 w-10 rounded-lg object-cover shrink-0" />
+      {tab === 'booking' ? (
+        <>
+          <h1 className="font-serif text-2xl font-medium text-navy sm:text-3xl">Booking</h1>
+          <p className="mt-2 text-sm text-navy-soft">Isi detail untuk memesan perjalanan</p>
+
+          <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+            {/* Destination info */}
+            <div>
+              <label className="block text-[11px] font-medium text-navy-soft uppercase tracking-wider mb-1.5">Destinasi</label>
+              {loadingDest ? (
+                <div className="rounded-xl border border-shore-200 bg-white px-3.5 py-3 animate-pulse">
+                  <div className="h-4 w-2/3 rounded-full bg-shore-100" />
+                </div>
+              ) : destination ? (
+                <div className="rounded-xl border border-teal-200 bg-teal-50/50 px-4 py-3 flex items-center gap-3">
+                  {destination.image ? (
+                    <img src={destination.image} alt={destination.name} className="h-10 w-10 rounded-lg object-cover shrink-0" />
+                  ) : (
+                    <span className="text-2xl shrink-0">{destination.emoji}</span>
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-[14px] font-medium text-navy truncate">{destination.name}</p>
+                    <p className="text-[12px] text-navy-soft">{destination.location}</p>
+                  </div>
+                </div>
               ) : (
-                <span className="text-2xl shrink-0">{destination.emoji}</span>
+                <div className="rounded-xl border border-shore-200 bg-white px-4 py-3">
+                  <p className="text-[13px] text-navy-soft">Tidak ada destinasi dipilih. <button type="button" onClick={() => router.push('/beranda')} className="text-teal-600 hover:text-teal-700 font-medium">Pilih dari beranda</button></p>
+                </div>
               )}
-              <div className="min-w-0">
-                <p className="text-[14px] font-medium text-navy truncate">{destination.name}</p>
-                <p className="text-[12px] text-navy-soft">{destination.location}</p>
+            </div>
+
+            {/* Date + Guests */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[11px] font-medium text-navy-soft uppercase tracking-wider mb-1.5">Tanggal *</label>
+                <input
+                  type="date"
+                  value={form.date}
+                  min={today}
+                  onChange={(e) => setForm({ ...form, date: e.target.value })}
+                  required
+                  className="w-full rounded-xl border border-shore-200 bg-white px-3.5 py-2.5 text-[13px] text-navy outline-none focus:border-teal-400 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-navy-soft uppercase tracking-wider mb-1.5">Jumlah Orang *</label>
+                <input
+                  type="number"
+                  value={form.guests}
+                  min={1}
+                  max={100}
+                  onChange={(e) => setForm({ ...form, guests: Number(e.target.value) })}
+                  required
+                  className="w-full rounded-xl border border-shore-200 bg-white px-3.5 py-2.5 text-[13px] text-navy outline-none focus:border-teal-400 transition-colors"
+                />
               </div>
             </div>
-          ) : (
-            <div className="rounded-xl border border-shore-200 bg-white px-4 py-3">
-              <p className="text-[13px] text-navy-soft">Tidak ada destinasi dipilih. <button type="button" onClick={() => router.push('/beranda')} className="text-teal-600 hover:text-teal-700 font-medium">Pilih dari beranda</button></p>
+
+            {/* Name */}
+            <div>
+              <label className="block text-[11px] font-medium text-navy-soft uppercase tracking-wider mb-1.5">Nama Lengkap *</label>
+              <input
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                placeholder="Nama pemesan"
+                required
+                className="w-full rounded-xl border border-shore-200 bg-white px-3.5 py-2.5 text-[13px] text-navy outline-none focus:border-teal-400 transition-colors"
+              />
             </div>
-          )}
-        </div>
 
-        {/* Date + Guests */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-[11px] font-medium text-navy-soft uppercase tracking-wider mb-1.5">Tanggal *</label>
-            <input
-              type="date"
-              value={form.date}
-              min={today}
-              onChange={(e) => setForm({ ...form, date: e.target.value })}
-              required
-              className="w-full rounded-xl border border-shore-200 bg-white px-3.5 py-2.5 text-[13px] text-navy outline-none focus:border-teal-400 transition-colors"
-            />
+            {/* Phone */}
+            <div>
+              <label className="block text-[11px] font-medium text-navy-soft uppercase tracking-wider mb-1.5">No. Telepon *</label>
+              <input
+                type="tel"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                placeholder="08xxxxxxxxxx"
+                required
+                className="w-full rounded-xl border border-shore-200 bg-white px-3.5 py-2.5 text-[13px] text-navy outline-none focus:border-teal-400 transition-colors"
+              />
+            </div>
+
+            {/* Notes */}
+            <div>
+              <label className="block text-[11px] font-medium text-navy-soft uppercase tracking-wider mb-1.5">Catatan (opsional)</label>
+              <textarea
+                value={form.notes}
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                placeholder="Permintaan khusus, alergi, dll..."
+                rows={3}
+                className="w-full rounded-xl border border-shore-200 bg-white px-3.5 py-2.5 text-[13px] text-navy outline-none focus:border-teal-400 transition-colors resize-none"
+              />
+            </div>
+
+            {/* Price estimate */}
+            {destination && (
+              <div className="card p-4 flex items-center justify-between">
+                <p className="text-[13px] text-navy-soft">Estimasi total</p>
+                <p className="text-lg font-semibold text-navy">
+                  {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(destination.priceStart * form.guests)}
+                </p>
+              </div>
+            )}
+
+            {/* Error */}
+            {error && (
+              <div className="rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-[13px] text-red-600 animate-fade-up">
+                {error}
+              </div>
+            )}
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={submitting || !destination}
+              className="btn-primary w-full rounded-xl px-4 py-3 text-[14px] font-medium shadow-glow disabled:opacity-50"
+            >
+              {submitting ? 'Memproses...' : 'Konfirmasi Booking'}
+            </button>
+
+            {!user && (
+              <p className="text-center text-[12px] text-navy-soft">
+                Kamu perlu <button type="button" onClick={() => router.push('/profile')} className="text-teal-600 font-medium hover:text-teal-700">masuk</button> terlebih dahulu untuk booking.
+              </p>
+            )}
+          </form>
+        </>
+      ) : (
+        /* Riwayat Tab */
+        <>
+          <h1 className="font-serif text-2xl font-medium text-navy sm:text-3xl">Riwayat Booking</h1>
+          <p className="mt-2 text-sm text-navy-soft">Daftar booking yang pernah kamu buat</p>
+
+          <div className="mt-6 space-y-3">
+            {!user ? (
+              <div className="card p-8 text-center">
+                <p className="text-sm text-navy-soft">
+                  <button onClick={() => router.push('/profile')} className="text-teal-600 font-medium hover:text-teal-700">Masuk</button> untuk melihat riwayat booking.
+                </p>
+              </div>
+            ) : loadingBookings ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="card p-5 animate-pulse space-y-3">
+                  <div className="h-4 w-2/3 rounded-full bg-shore-100" />
+                  <div className="h-3 w-1/2 rounded-full bg-shore-100" />
+                </div>
+              ))
+            ) : bookings.length === 0 ? (
+              <div className="card p-8 text-center">
+                <div className="h-12 w-12 rounded-xl bg-shore-100 flex items-center justify-center mx-auto mb-3 text-navy-soft">
+                  <CalendarIcon />
+                </div>
+                <p className="text-sm text-navy-soft">Belum ada booking.</p>
+                <button onClick={() => setTab('booking')} className="btn-primary rounded-xl px-5 py-2.5 text-[13px] mt-4">
+                  Buat Booking
+                </button>
+              </div>
+            ) : (
+              bookings.map((b) => (
+                <div key={b.id} className="card p-5 animate-fade-in">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-[15px] font-medium text-navy">{b.destinationName}</p>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-[12px] text-navy-soft">
+                        <span>
+                          {new Date(b.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </span>
+                        <span>{b.guests} orang</span>
+                        <span>{b.phone}</span>
+                      </div>
+                      {b.notes && (
+                        <p className="mt-2 text-[12px] text-navy-soft italic">{b.notes}</p>
+                      )}
+                    </div>
+                    <span className={clsx(
+                      'rounded-lg px-2.5 py-1 text-[11px] font-medium shrink-0',
+                      b.status === 'confirmed' && 'bg-teal-100 text-teal-700',
+                      b.status === 'cancelled' && 'bg-red-100 text-red-600',
+                      b.status === 'pending' && 'bg-amber-100 text-amber-700',
+                    )}>
+                      {b.status === 'confirmed' ? 'Dikonfirmasi' : b.status === 'cancelled' ? 'Dibatalkan' : 'Menunggu'}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
-          <div>
-            <label className="block text-[11px] font-medium text-navy-soft uppercase tracking-wider mb-1.5">Jumlah Orang *</label>
-            <input
-              type="number"
-              value={form.guests}
-              min={1}
-              max={100}
-              onChange={(e) => setForm({ ...form, guests: Number(e.target.value) })}
-              required
-              className="w-full rounded-xl border border-shore-200 bg-white px-3.5 py-2.5 text-[13px] text-navy outline-none focus:border-teal-400 transition-colors"
-            />
-          </div>
-        </div>
-
-        {/* Name */}
-        <div>
-          <label className="block text-[11px] font-medium text-navy-soft uppercase tracking-wider mb-1.5">Nama Lengkap *</label>
-          <input
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            placeholder="Nama pemesan"
-            required
-            className="w-full rounded-xl border border-shore-200 bg-white px-3.5 py-2.5 text-[13px] text-navy outline-none focus:border-teal-400 transition-colors"
-          />
-        </div>
-
-        {/* Phone */}
-        <div>
-          <label className="block text-[11px] font-medium text-navy-soft uppercase tracking-wider mb-1.5">No. Telepon *</label>
-          <input
-            type="tel"
-            value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            placeholder="08xxxxxxxxxx"
-            required
-            className="w-full rounded-xl border border-shore-200 bg-white px-3.5 py-2.5 text-[13px] text-navy outline-none focus:border-teal-400 transition-colors"
-          />
-        </div>
-
-        {/* Notes */}
-        <div>
-          <label className="block text-[11px] font-medium text-navy-soft uppercase tracking-wider mb-1.5">Catatan (opsional)</label>
-          <textarea
-            value={form.notes}
-            onChange={(e) => setForm({ ...form, notes: e.target.value })}
-            placeholder="Permintaan khusus, alergi, dll..."
-            rows={3}
-            className="w-full rounded-xl border border-shore-200 bg-white px-3.5 py-2.5 text-[13px] text-navy outline-none focus:border-teal-400 transition-colors resize-none"
-          />
-        </div>
-
-        {/* Price estimate */}
-        {destination && (
-          <div className="card p-4 flex items-center justify-between">
-            <p className="text-[13px] text-navy-soft">Estimasi total</p>
-            <p className="text-lg font-semibold text-navy">
-              {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(destination.priceStart * form.guests)}
-            </p>
-          </div>
-        )}
-
-        {/* Error */}
-        {error && (
-          <div className="rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-[13px] text-red-600 animate-fade-up">
-            {error}
-          </div>
-        )}
-
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={submitting || !destination}
-          className="btn-primary w-full rounded-xl px-4 py-3 text-[14px] font-medium shadow-glow disabled:opacity-50"
-        >
-          {submitting ? 'Memproses...' : 'Konfirmasi Booking'}
-        </button>
-
-        {!user && (
-          <p className="text-center text-[12px] text-navy-soft">
-            Kamu perlu <button type="button" onClick={() => router.push('/profile')} className="text-teal-600 font-medium hover:text-teal-700">masuk</button> terlebih dahulu untuk booking.
-          </p>
-        )}
-      </form>
+        </>
+      )}
     </div>
   );
 }
@@ -253,7 +386,7 @@ export default function Booking() {
       <TopNav />
       <section className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-10 lg:py-16">
         <Suspense>
-          <BookingForm />
+          <BookingContent />
         </Suspense>
       </section>
       <BottomNav />

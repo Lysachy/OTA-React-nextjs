@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useUserRole } from '@/lib/useAuth';
 import DashboardSidebar, { type DashboardPage } from '@/components/dashboard/DashboardSidebar';
 import StatistikPanel from '@/components/dashboard/StatistikPanel';
+import PengelolaStatistikPanel from '@/components/dashboard/PengelolaStatistikPanel';
 import DestinasiPanel from '@/components/dashboard/DestinasiPanel';
 import PenggunaPanel from '@/components/dashboard/PenggunaPanel';
 
@@ -18,12 +19,12 @@ export default function Dashboard() {
     if (loading) return;
     if (!user) {
       router.replace('/profile');
-    } else if (role && role !== 'admin') {
+    } else if (role && role !== 'admin' && role !== 'pengelola') {
       router.replace('/beranda');
     }
   }, [user, role, loading, router]);
 
-  if (loading || !user || !role || role !== 'admin') {
+  if (loading || !user || !role || (role !== 'admin' && role !== 'pengelola')) {
     return null;
   }
 
@@ -34,12 +35,13 @@ export default function Dashboard() {
         onNavigate={setPage}
         mobileOpen={mobileOpen}
         onMobileToggle={() => setMobileOpen(!mobileOpen)}
+        role={role}
       />
       <main className="flex-1 min-w-0 pt-14 md:pt-0">
         <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-10 lg:px-10">
-          {page === 'statistik' && <StatistikPanel />}
-          {page === 'destinasi' && <DestinasiPanel />}
-          {page === 'pengguna' && <PenggunaPanel />}
+          {page === 'statistik' && (role === 'admin' ? <StatistikPanel /> : <PengelolaStatistikPanel />)}
+          {page === 'destinasi' && role === 'admin' && <DestinasiPanel />}
+          {page === 'pengguna' && role === 'admin' && <PenggunaPanel />}
         </div>
       </main>
     </div>
